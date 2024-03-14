@@ -1,0 +1,33 @@
+version: '3.4'
+
+#services:
+#  user.graphql:
+#    environment:
+#      - ASPNETCORE_ENVIRONMENT=Development
+#    ports:
+#      - "80"
+
+services:
+  user.graphql:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  store.garphql:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  lookup.graphql:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  order.garphql:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "54080:80"
+
+  gateway.graphql:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+  
+

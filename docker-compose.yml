@@ -1,0 +1,162 @@
+version: '3.4'
+
+services:
+  #user.graphql:
+  #  image: ${DOCKER_REGISTRY-}usergraphql
+  #  build:
+  #    context: .
+  #    dockerfile: User.GraphQL/Dockerfile
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server
+    container_name: mssql-bekal
+    environment:
+        - MSSQL_SA_PASSWORD=Pass@word
+        - ACCEPT_EULA=Y
+    ports:
+        - "1433:1433"
+  
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.3.0
+    hostname: zookeeper
+    container_name: zookeeper-bekal
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  broker:
+    image: confluentinc/cp-kafka:7.3.0
+    container_name: broker-bekal
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+  kafka-init:
+    image: confluentinc/cp-kafka:7.3.0
+    container_name: kafka-init-bekal
+    depends_on:
+      - zookeeper
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics --bootstrap-server broker:29092 --list
+
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic Users --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic Lookups --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic Stores --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic Carts --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic Payments --replication-factor 1 --partitions 1
+
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server broker:29092 --list
+      "
+ 
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui-bekal
+    depends_on:
+      - broker
+    ports:
+      - "8080:8080"
+    restart: "no"
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=broker:29092
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
+
+
+  user.graphql:
+    image: ${DOCKER_REGISTRY-}usergraphql
+    container_name: user-bekal
+    build:
+      context: .
+      dockerfile: User.GraphQL/Dockerfile
+    environment:
+        - ConnectionStrings__DefaultConnection=Server=mssql; Database=UserDatabase; User=sa; Password=Pass@word; TrustServerCertificate=True
+        - JWT__ExpireDays=60
+        - JWT__Secret=JWTAuthorization2024Bekal.NetMicroservices
+        - JWT__ValidAudience=*
+        - JWT__ValidIssuer=*
+        - KafkaProducer__ProducerConfig__BootstrapServers=broker:29092
+        - KafkaProducer__Topic=Users
+    depends_on:
+        - mssql
+        - broker
+    ports:
+        - "51080:80"
+
+  store.garphql:
+    image: ${DOCKER_REGISTRY-}storegarphql
+    build:
+      context: .
+      dockerfile: Store/Store.GarphQL/Dockerfile
+    environment:
+        - ConnectionStrings__DefaultConnection=Server=mssql; Database=StoreDataBase; User=sa; Password=Pass@word; TrustServerCertificate=True
+        - JWT__ExpireDays=60
+        - JWT__Secret=JWTAuthorization2024Bekal.NetMicroservices
+        - JWT__ValidAudience=*
+        - JWT__ValidIssuer=*
+        - KafkaConsumer__ConsumerConfig__AutoOffsetReset=Earliest
+        - KafkaConsumer__ConsumerConfig__BootstrapServers=broker:29092
+        - KafkaConsumer__ConsumerConfig__EnableAutoCommit=False
+        - KafkaConsumer__ConsumerConfig__GroupId=Stores
+        - KafkaConsumer__Topics__0=Lookups
+        - KafkaProducer__ProducerConfig__BootstrapServers=broker:29092
+        - KafkaProducer__Topic=Stores
+    depends_on:
+        - mssql
+        - broker
+    ports:
+        - "52080:80"
+
+  lookup.graphql:
+    image: ${DOCKER_REGISTRY-}lookupgraphql
+    build:
+      context: .
+      dockerfile: Lookup.GraphQL/Dockerfile
+    environment:
+        - ConnectionStrings__DefaultConnection=Server=mssql; Database=LookUpDataBase; User=sa; Password=Pass@word; TrustServerCertificate=True
+        - JWT__ExpireDays=60
+        - JWT__Secret=JWTAuthorization2024Bekal.NetMicroservices
+        - JWT__ValidAudience=*
+        - JWT__ValidIssuer=*
+        - KafkaProducer__ProducerConfig__BootstrapServers=broker:29092
+        - KafkaProducer__Topic=Lookups
+    depends_on:
+        - mssql
+        - broker
+    ports:
+        - "53080:80"
+
+  order.garphql:
+    image: ${DOCKER_REGISTRY-}ordergarphql
+    build:
+      context: .
+      dockerfile: Order/Order.GarphQL/Dockerfile
+
+
+  gateway.graphql:
+    image: ${DOCKER_REGISTRY-}gatewaygraphql
+    build:
+      context: .
+      dockerfile: Gateway.GraphQL/Dockerfile
+    environment:
+        - HttpClients__LookupService=http://lookup.graphql/graphql
+        - HttpClients__StoreService=http://store.graphql/graphql
+        - HttpClients__UserService=http://user.graphql/graphql
+    ports:
+        - "55080:80"
+
+
+

@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "user.graphql": "StartDebugging",
+        "store.garphql": "StartDebugging",
+        "lookup.graphql": "StartDebugging",
+        "order.garphql": "StartDebugging",
+        "gateway.graphql": "StartDebugging"
+      }
+    }
+  }
+}
