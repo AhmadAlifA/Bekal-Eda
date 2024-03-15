@@ -8,7 +8,7 @@ namespace Order.Domain.Dtos
         public Guid CustomerId { get; set; }
         public CartStatusEnum Status { get; set; }
         public List<CartProductDto?> CartProducts { get; set; }
-        public UserDto Customer { get; set; }
+        public UserDto? Customer { get; set; }
     }
     public class CartCreatedUpdatedDto
     {

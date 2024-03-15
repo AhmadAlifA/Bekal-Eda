@@ -10,12 +10,7 @@ namespace Payment.Domain
             => services.Projection(builder =>
                 builder
                     .AddOn<CartCreated>(CartProjection.Handle)
-                    .AddOn<CartUpdated>(CartProjection.Handle)
                     .AddOn<CartStatusChanged>(CartProjection.Handle)
-                    .AddOn<CartProductCreated>(CartProductProjection.Handle)
-                    .AddOn<CartProductUpdated>(CartProductProjection.Handle)
-                    .AddOn<CartProductCartChanged>(CartProductProjection.Handle)
-                    .AddOn<CartProductProductChanged>(CartProductProjection.Handle)
             );
     }
 }

@@ -70,38 +70,43 @@ namespace Order.Domain.Services
                     entity.Status = status;
                     var result = await _repository.SaveChangesAsync();
 
-                    if (result > 0)
+                    if (entity.CartProducts != null)
                     {
-                        List<CartProductItem> listCP = new List<CartProductItem>();
-
-                        if (status == CartStatusEnum.Confirmed)
+                        if (result > 0)
                         {
-                            var cartProducts = await _cartProductRepository.GetCartById(entity.Id);
+                            List<CartProductItem> listCP = new List<CartProductItem>();
+                            decimal totalPriceCart = 0;
 
-                            foreach (var item in cartProducts)
+                            if (status == CartStatusEnum.Confirmed)
                             {
-                                listCP.Add(new CartProductItem()
+                                var cartProducts = await _cartProductRepository.GetCartById(entity.Id);
+                                foreach (var item in cartProducts)
                                 {
-                                    Id = item.Id,
-                                    ProductId = item.ProductId,
-                                    Quantity = item.Quantity,
-                                    Price = item.Price,
-                                    Total = item.Price * (decimal)item.Quantity
-                                });
+                                    listCP.Add(new CartProductItem()
+                                    {
+                                        Id = item.Id,
+                                        ProductId = item.ProductId,
+                                        Quantity = item.Quantity,
+                                        Price = item.Price,
+                                        Total = item.Price * (decimal)item.Quantity,
+                                    });
+                                    totalPriceCart += item.Price * (decimal)item.Quantity;
+                                }
                             }
+
+                            var externalEvent = new EventEnvelope<CartStatusChanged>(
+                                CartStatusChanged.Create(
+                                entity.Id,
+                                listCP,
+                                entity.Status,
+                                totalPriceCart
+                                ));
+                            await _externalEventProducer.Publish(externalEvent, new CancellationToken());
+
                         }
-
-                        var externalEvent = new EventEnvelope<CartStatusChanged>(
-                            CartStatusChanged.Create(
-                            entity.Id,
-                            listCP,
-                            entity.Status
-                            ));
-                        await _externalEventProducer.Publish(externalEvent, new CancellationToken());
-
                     }
+                    return res;
                 }
-                return res;
             }
             catch (Exception e)
             {

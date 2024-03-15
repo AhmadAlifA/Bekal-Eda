@@ -14,11 +14,12 @@ namespace Order.Domain.EventEnvelopes.Cart
     public record CartStatusChanged(
         Guid Id,
         List<CartProductItem> CartProducts,
-        CartStatusEnum Status
+        CartStatusEnum Status,
+        decimal TotalPriceCart
         )
     {
         public static CartStatusChanged Create(Guid id, List<CartProductItem> cartProducts,
-            CartStatusEnum status) => new(id, cartProducts, status);
+            CartStatusEnum status, decimal totalPriceCart) => new(id, cartProducts, status, totalPriceCart);
     }
 
     public class CartProductItem

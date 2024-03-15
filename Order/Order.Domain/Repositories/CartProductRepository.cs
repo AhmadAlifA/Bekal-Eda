@@ -61,7 +61,10 @@ namespace Order.Domain.Repositories
         {
             try
             {
-                return await _context.Set<CartProductEntity>().FindAsync(id);
+                return await _context.Set<CartProductEntity>()
+                    .Include(o => o.Cart)
+                    .Include(o => o.Product)
+                    .FirstOrDefaultAsync(x => x.Id == id);
             }
             catch (Exception e)
             {

@@ -17,8 +17,8 @@ namespace Order.Domain.Dtos
         public int Quantity { get; set; } = default!;
         public decimal Price { get; set; } = default!;
         public RecordStatusEnum Status { get; set; } = RecordStatusEnum.Active;
-        public CartDto Cart { get; set; }
-        public ProductDto Product { get; set; }
+        public CartDto? Cart { get; set; }
+        public ProductDto? Product { get; set; }
     }
     public class CartProductCreateDto
     {

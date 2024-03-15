@@ -144,7 +144,8 @@ services:
     build:
       context: .
       dockerfile: Order/Order.GarphQL/Dockerfile
-
+    ports:
+      - "54080:80"
 
   gateway.graphql:
     image: ${DOCKER_REGISTRY-}gatewaygraphql
@@ -158,5 +159,10 @@ services:
     ports:
         - "55080:80"
 
-
-
+  payment.garphql:
+    image: ${DOCKER_REGISTRY-}paymentgarphql
+    build:
+      context: .
+      dockerfile: Payment/Payment.GarphQL/Dockerfile
+    ports:
+      - "56080:80"

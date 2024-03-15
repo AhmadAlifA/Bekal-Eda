@@ -1,4 +1,5 @@
-﻿using Order.Domain.Dtos;
+﻿using HotChocolate.Authorization;
+using Order.Domain.Dtos;
 using Order.Domain.Services;
 
 namespace Order.GarphQL.Schema.Mutation
@@ -11,11 +12,14 @@ namespace Order.GarphQL.Schema.Mutation
         {
             _service = service;
         }
+
+        [Authorize(Roles = new[] { "administrator", "customer" })]
         public async Task<CartProductDto> AddCartProductAsync(CartProductCreateDto dto)
         {
             return await _service.AddCartProduct(dto);
         }
 
+        [Authorize(Roles = new[] { "administrator", "customer" })]
         public async Task<CartProductDto> UpdateCartProductAsync(CartProductUpdateDto dto)
         {
             var result = await _service.UpdateCartProduct(dto);

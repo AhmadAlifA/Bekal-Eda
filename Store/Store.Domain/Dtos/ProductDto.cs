@@ -50,15 +50,15 @@ namespace Store.Domain.Dtos
     public class ProductPriceVolumeDto
     {
         public Guid Id { get; set; }
-        public decimal Price { get; set; }
-        public decimal Volume { get; set; }
+        public decimal? Price { get; set; }
+        public decimal? Volume { get; set; }
     }
 
     public class ProductStockSoldDto
     {
         public Guid Id { get; set; }
-        public int Stock { get; set; }
-        public int Sold { get; set; }
+        public int? Stock { get; set; }
+        public int? Sold { get; set; }
     }
 
     public class ProductStatusDto

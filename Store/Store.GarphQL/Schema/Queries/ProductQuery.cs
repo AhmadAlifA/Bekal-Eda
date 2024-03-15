@@ -16,5 +16,10 @@ namespace Store.GarphQL.Schema.Queries
         {
             return await _service.GetAllProduct();
         }
+
+        public async Task<ProductDto> GetProductById(Guid id)
+        {
+            return await _service.GetProductById(id);
+        }
     }
 }

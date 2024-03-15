@@ -37,6 +37,7 @@ namespace Order.Domain.Repositories
             {
                 var result = await _context.Set<CartEntity>()
                     .Include(o => o.Customer)
+                    .Include(o => o.CartProducts)
                     .ToListAsync();
 
                 return result;
@@ -51,7 +52,10 @@ namespace Order.Domain.Repositories
 
         public async Task<CartEntity> GetById(Guid id)
         {
-            return await _context.Set<CartEntity>().FindAsync(id);
+            return await _context.Set<CartEntity>()
+                .Include(o => o.Customer)
+                .Include(o => o.CartProducts)
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -16,6 +16,7 @@ namespace Payment.Domain.MapProfile
 
             CreateMap<PaymentEntity, PaymentDto> ();
             CreateMap<PaymentDto, PaymentEntity>();
+            CreateMap<PaymentStatusDto, PaymentEntity>();
         }
     }
 }

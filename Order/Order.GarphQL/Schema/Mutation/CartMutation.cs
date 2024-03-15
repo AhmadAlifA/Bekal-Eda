@@ -14,13 +14,15 @@ namespace Order.GarphQL.Schema.Mutation
             _service = service;
         }
 
-        [Authorize]
+        //[Authorize]
+        [Authorize(Roles = new[] { "administrator", "customer" })]
         public async Task<CartDto> AddAsync(CartCreatedUpdatedDto dto)
         {
             return await _service.AddCart(dto);
         }
-
-        public async Task<CartDto> ChangeStatusAsync(Guid id)
+       
+        [Authorize(Roles = new[] { "administrator", "customer" })]
+        public async Task<CartDto> ConfirmCartToPaymentAsync(Guid id)
         {
             CartDto dto = new CartDto();
             dto.Id = id;

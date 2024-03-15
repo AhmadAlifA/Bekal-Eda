@@ -52,6 +52,22 @@ namespace Store.GarphQL.Schema.Mutation
             return null;
         }
 
+        public async Task<ProductDto> ChangeProductStockSoldAsync(ProductStockSoldDto dto)
+        {
+            var result = await _service.ChangeStockSold(dto);
+            if (result != null)
+                return result;
+            return null;
+        }
+
+        public async Task<ProductDto> ChangeProductPriceVolumeAsync(ProductPriceVolumeDto dto)
+        {
+            var result = await _service.ChangePriceVolume(dto);
+            if (result != null)
+                return result;
+            return null;
+        }
+
         public async Task<ProductStatusDto> ChangeStatusProductAsync(ProductStatusDto dto)
         {
             var result = await _service.ProductChangeStatus(dto);

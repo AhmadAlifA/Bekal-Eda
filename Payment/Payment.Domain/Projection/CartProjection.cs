@@ -1,6 +1,5 @@
 ﻿using Framework.Core.Enums;
 using Framework.Core.Events;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Payment.Domain.Entities;
 using Payment.Domain.Services;
 
@@ -15,7 +14,9 @@ namespace Payment.Domain.Projection
         Guid Id,
         Guid CustomerId,
         List<CartProductItem> CartProducts,
-        CartStatusEnum Status
+        CartStatusEnum Status,
+        decimal Total,
+        decimal TotalPriceCart
     );
     public class CartProductItem
     {
@@ -49,7 +50,7 @@ namespace Payment.Domain.Projection
         }
         public static bool Handle(EventEnvelope<CartStatusChanged> eventEnvelope)
         {
-            var (id, customerId, cartProducts, status) = eventEnvelope.Data;
+            var (id, customerId, cartProducts, status, total, TotalPriceCart) = eventEnvelope.Data;
             using (var context = new PaymentDbContext(PaymentDbContext.OnConfigure()))
             {
                 CartEntity entity = context.Carts.Where(o => o.Id == id).FirstOrDefault();
@@ -83,7 +84,7 @@ namespace Payment.Domain.Projection
                         Id= Guid.NewGuid(),
                         CartId = entity.Id,
                         CustomerId = entity.CustomerId,
-                        Total = entity.Total,
+                        Total = TotalPriceCart,
                         Status = CartStatusEnum.Confirmed
                     };
                     context.Payments.Add(paymentEntity);

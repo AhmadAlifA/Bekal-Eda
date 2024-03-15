@@ -77,6 +77,15 @@ namespace Order.Domain.Projection
                     entity.Price = price;
                     entity.Volume = volume;
                     context.Update(entity);
+
+                    List<CartProductEntity> entityCart = context.Set<CartProductEntity>().Where(x => x.ProductId == id).ToList();
+                    entityCart.ForEach(x =>
+                    {
+                        x.Price = price;
+
+                        context.Entry(x).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                    });
+                    context.UpdateRange(entityCart);
                     context.SaveChanges();
                 }
             }

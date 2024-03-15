@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Framework.Auth;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Payment.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -21,9 +23,11 @@ namespace Payment.Domain.Repositories
     public class PaymentRepository: IPaymentRepository
     {
         private readonly PaymentDbContext _context;
-        public PaymentRepository(PaymentDbContext context)
+        private ContextAccessor _contextAccessor;
+        public PaymentRepository(PaymentDbContext context, IHttpContextAccessor contextAccessor)
         {
             _context = context;
+            _contextAccessor = new ContextAccessor(contextAccessor);
             _context.Database.EnsureCreated();
         }
         public async Task<PaymentEntity> Add(PaymentEntity entity)

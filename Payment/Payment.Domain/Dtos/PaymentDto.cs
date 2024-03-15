@@ -13,9 +13,6 @@ namespace Payment.Domain.Dtos
         public CartDto Cart { get; set; }
     }
 
-    public class PaymentCreateDto
-    {
-    }
     public class PaymentUpdateDto
     {
         public Guid Id { get; set; }
@@ -24,14 +21,9 @@ namespace Payment.Domain.Dtos
 
     }
 
-    public class PaymentCartDto
-    {
-
-    }
-
     public class PaymentStatusDto
     {
         public Guid Id { get; set; }
-        public CartStatusEnum Status { get; set; } = CartStatusEnum.Canceled;
+        public CartStatusEnum? Status { get; set; } = CartStatusEnum.Canceled;
     }
 }

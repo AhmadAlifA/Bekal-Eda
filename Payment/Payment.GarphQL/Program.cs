@@ -1,11 +1,11 @@
-using Order.Domain;
-using Order.Domain.MapProfile;
+using Payment.Domain.Repositories;
+using Payment.Domain.Services;
+using Payment.Domain;
+using Payment.GraphQL.Schema.Mutation;
+using Payment.GraphQL.Schema.Queries;
 using Framework.Core.Events;
 using Framework.Kafka;
-using Order.GarphQL.Schema.Queries;
-using Order.GarphQL.Schema.Mutation;
-using Order.Domain.Repositories;
-using Order.Domain.Services;
+using Payment.Domain.MapProfile;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -72,7 +72,7 @@ builder.Services.AddAutoMapper(config =>
     config.AddProfile<EntityToDtoProfile>();
 });
 
-builder.Services.AddOrder();
+builder.Services.AddPayment();
 builder.Services.AddEventBus();
 builder.Services.AddKafkaProducer();
 builder.Services.AddKafkaConsumer();
@@ -80,22 +80,15 @@ builder.Services.AddKafkaConsumer();
 builder.Services
     .AddScoped<Query>()
     .AddScoped<Mutation>()
-    .AddScoped<CartQuery>()
-    .AddScoped<CartProductQuery>()
-    .AddScoped<ProductQuery>()
-    .AddScoped<CartMutation>()
-    .AddScoped<CartProductMutation>()
-    .AddScoped<ICartRepository, CartRepository>()
-    .AddScoped<ICartProductRepository, CartProductRepository>()
-    .AddScoped<ICartService, CartService>()
-    .AddScoped<ICartProductService, CartProductService>()
+    .AddScoped<PaymentQuery>()
+    .AddScoped<PaymentMutation>()
+    .AddScoped<IPaymentService, PaymentService>()
+    .AddScoped<IPaymentRepository, PaymentRepository>()
     .AddGraphQLServer()
     .AddQueryType<Query>()
-    .AddTypeExtension<CartQuery>()
-    .AddTypeExtension<CartProductQuery>()
+    .AddTypeExtension<PaymentQuery>()
     .AddMutationType<Mutation>()
-    .AddTypeExtension<CartMutation>()
-    .AddTypeExtension<CartProductMutation>()
+    .AddTypeExtension<PaymentMutation>()
     .AddAuthorization();
 
 builder.Services.AddAuthorization();

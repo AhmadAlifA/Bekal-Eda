@@ -23,11 +23,13 @@ services:
   order.garphql:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-    ports:
-      - "54080:80"
 
   gateway.graphql:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-  
+
+  payment.garphql:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
 

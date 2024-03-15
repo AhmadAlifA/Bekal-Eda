@@ -11,7 +11,6 @@ namespace Payment.Domain.Entities
         public Guid Id { get; set; }
         public Guid CustomerId { get; set; }
         public CartStatusEnum Status { get; set; }
-        public decimal Total { get; set; }
     }
 
     public class CartConfiguration : IEntityTypeConfiguration<CartEntity>

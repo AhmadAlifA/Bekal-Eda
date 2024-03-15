@@ -8,7 +8,8 @@
         "store.garphql": "StartDebugging",
         "lookup.graphql": "StartDebugging",
         "order.garphql": "StartDebugging",
-        "gateway.graphql": "StartDebugging"
+        "gateway.graphql": "StartDebugging",
+        "payment.garphql": "StartDebugging"
       }
     }
   }
