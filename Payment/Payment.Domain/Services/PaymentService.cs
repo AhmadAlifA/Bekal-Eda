@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Framework.Core.Enums;
 using Framework.Core.Events;
 using Framework.Core.Events.External;
 using Payment.Domain.Dtos;
@@ -54,9 +55,11 @@ namespace Payment.Domain.Services
                 if (dto.Id != new Guid())
                 {
                     var existEntity = await _repository.GetById(dto.Id);
-                    if (existEntity != null && existEntity.Total < dto.Pay)
+                    if (existEntity != null && existEntity.Total <= dto.Pay)
                     {
                         var entity = _mapper.Map<PaymentUpdateDto, PaymentEntity>(dto, existEntity);
+                        entity.Status = CartStatusEnum.Paid;
+
                         await _repository.Update(entity);
                         var result = await _repository.SaveChangesAsync();
                         if (result > 0)

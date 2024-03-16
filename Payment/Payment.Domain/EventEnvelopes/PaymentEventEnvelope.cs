@@ -25,15 +25,7 @@ namespace Payment.Domain.EventEnvelopes
     ( Guid Id, decimal Pay )
     {
         public static PaymentUpdated Create(Guid id,
-            decimal pay
-                ) => new(id, pay);
-    }
-
-    public record PaymentCartChanged
-    ( Guid Id, Guid CartId )
-    {
-        public static PaymentCartChanged Create(Guid id, Guid cartId
-                ) => new(id, cartId);
+            decimal pay) => new(id, pay);
     }
 
     public record PaymentStatusChanged

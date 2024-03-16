@@ -18,13 +18,15 @@ namespace Order.Domain.Services
     public class CartProductService : ICartProductService
     {
         private ICartProductRepository _repository;
+        private readonly IProductRepository _productRepository;
         private readonly IMapper _mapper;
         private readonly IExternalEventProducer _externalEventProducer;
-        public CartProductService(ICartProductRepository repository, IMapper mapper, IExternalEventProducer externalEventProducer)
+        public CartProductService(ICartProductRepository repository, IMapper mapper, IExternalEventProducer externalEventProducer, IProductRepository productRepository)
         {
             _repository = repository;
             _mapper = mapper;
             _externalEventProducer = externalEventProducer;
+            _productRepository = productRepository;
         }
 
         public async Task<IEnumerable<CartProductDto>> GetAllCartProduct()
@@ -96,8 +98,19 @@ namespace Order.Domain.Services
                 if (dto.Id != new Guid())
                 {
                     var existEntity = await _repository.GetById(dto.Id);
+                    var product = await _repository.GetProductById(existEntity.ProductId);
+
                     if (existEntity != null)
                     {
+                        if (product.Stock < dto.Quantity)
+                            return null;
+                        else
+                        {
+                            product.Stock = product.Stock - dto.Quantity;
+
+                            await _productRepository.Update(product);
+                        }
+
                         var entity = _mapper.Map<CartProductUpdateDto, CartProductEntity>(dto, existEntity);
                         await _repository.Update(entity);
                         var result = await _repository.SaveChangesAsync();

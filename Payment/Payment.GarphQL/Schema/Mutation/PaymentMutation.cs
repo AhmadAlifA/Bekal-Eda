@@ -1,5 +1,4 @@
 ﻿using HotChocolate.Authorization;
-using HotChocolate.Types;
 using Payment.Domain.Dtos;
 using Payment.Domain.Services;
 
