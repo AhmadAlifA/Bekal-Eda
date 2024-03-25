@@ -1,4 +1,4 @@
-namespace Store.GarphQL
+namespace Store.GraphQL
 {
     public class WeatherForecast
     {

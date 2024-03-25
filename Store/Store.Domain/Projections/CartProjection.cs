@@ -25,18 +25,14 @@ public class CartProjection
         var (id, cartProducts, status) = eventEnvelope.Data;
         using (var context = new StoreDbContext(StoreDbContext.OnConfigure()))
         {
-            //foreach(var product in cartProducts)
-            //{
-            //    var newStock = 
-            //    ProductEntity entity = new ProductEntity()
-            //    {
-            //        Id = (Guid)id,
-            //        Stock = ,
-            //    };
-
-            //}
-            //context.Add(entity);
-            //context.SaveChanges();
+            foreach (var product in cartProducts)
+            {
+                var productDb = context.Products.Where(o => o.Id == product.ProductId).FirstOrDefault();
+                if (product.ProductId == productDb.Id)
+                    productDb.Stock = productDb.Stock - product.Quantity;
+                context.Update(productDb);
+                context.SaveChanges();
+            }
         }
         return true;
     }

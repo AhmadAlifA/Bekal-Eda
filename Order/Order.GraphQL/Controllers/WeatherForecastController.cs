@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Order.GarphQL.Controllers
+namespace Order.GraphQL.Controllers
 {
     [ApiController]
     [Route("[controller]")]

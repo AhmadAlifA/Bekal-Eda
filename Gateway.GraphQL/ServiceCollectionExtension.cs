@@ -29,11 +29,25 @@ namespace Gateway.GraphQL
                 config.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await GetToken());
             });
 
+            services.AddHttpClient("Order", async config =>
+            {
+                config.BaseAddress = new Uri(configuration["HttpClients:StoreService"]);
+                config.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await GetToken());
+            });
+
+            services.AddHttpClient("Payment", async config =>
+            {
+                config.BaseAddress = new Uri(configuration["HttpClients:StoreService"]);
+                config.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await GetToken());
+            });
+
             services
                 .AddGraphQLServer()
                 .AddRemoteSchema("User")
                 .AddRemoteSchema("LookUp")
-                .AddRemoteSchema("Store");
+                .AddRemoteSchema("Store")
+                .AddRemoteSchema("Order")
+                .AddRemoteSchema("Payment");
 
             return services;
         }

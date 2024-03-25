@@ -57,6 +57,7 @@ services:
       kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic Stores --replication-factor 1 --partitions 1
       kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic Carts --replication-factor 1 --partitions 1
       kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic Payments --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic Wallets --replication-factor 1 --partitions 1
 
       echo -e 'Successfully created the following topics:'
       kafka-topics --bootstrap-server broker:29092 --list
@@ -74,7 +75,6 @@ services:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=broker:29092
       - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
-
 
   user.graphql:
     image: ${DOCKER_REGISTRY-}usergraphql
@@ -96,11 +96,11 @@ services:
     ports:
         - "51080:80"
 
-  store.garphql:
-    image: ${DOCKER_REGISTRY-}storegarphql
+  store.graphql:
+    image: ${DOCKER_REGISTRY-}storegraphql
     build:
       context: .
-      dockerfile: Store/Store.GarphQL/Dockerfile
+      dockerfile: Store/Store.Graphql/Dockerfile
     environment:
         - ConnectionStrings__DefaultConnection=Server=mssql; Database=StoreDataBase; User=sa; Password=Pass@word; TrustServerCertificate=True
         - JWT__ExpireDays=60
@@ -139,11 +139,25 @@ services:
     ports:
         - "53080:80"
 
-  order.garphql:
-    image: ${DOCKER_REGISTRY-}ordergarphql
+  order.graphql:
+    image: ${DOCKER_REGISTRY-}ordergraphql
     build:
       context: .
-      dockerfile: Order/Order.GarphQL/Dockerfile
+      dockerfile: Order/Order.Graphql/Dockerfile
+    environment:
+        - ConnectionStrings__DefaultConnection=Server=localhost,1433; Database=OrderDataBase; User=sa; Password=Pass@word; TrustServerCertificate=True
+        - JWT__ExpireDays=60
+        - JWT__Secret=JWTAuthorization2024Bekal.NetMicroservices
+        - JWT__ValidAudience=*
+        - JWT__ValidIssuer=*
+        - KafkaConsumer__ConsumerConfig__AutoOffsetReset=Earliest
+        - KafkaConsumer__ConsumerConfig__BootstrapServers=localhost:9092
+        - KafkaConsumer__ConsumerConfig__EnableAutoCommit=False
+        - KafkaConsumer__ConsumerConfig__GroupId=Carts
+        - KafkaConsumer__Topics__0=Users
+        - KafkaConsumer__Topics__1=Stores
+        - KafkaProducer__ProducerConfig__BootstrapServers=localhost:9092
+        - KafkaProducer__Topic=Carts
     ports:
       - "54080:80"
 
@@ -159,10 +173,23 @@ services:
     ports:
         - "55080:80"
 
-  payment.garphql:
-    image: ${DOCKER_REGISTRY-}paymentgarphql
+  payment.graphql:
+    image: ${DOCKER_REGISTRY-}paymentgraphql
     build:
       context: .
-      dockerfile: Payment/Payment.GarphQL/Dockerfile
+      dockerfile: Payment/Payment.Graphql/Dockerfile
+    environment:
+        - ConnectionStrings__DefaultConnection=Server=localhost,1433; Database=PaymentDataBase; User=sa; Password=Pass@word; TrustServerCertificate=True
+        - JWT__ExpireDays=60
+        - JWT__Secret=JWTAuthorization2024Bekal.NetMicroservices
+        - JWT__ValidAudience=*
+        - JWT__ValidIssuer=*
+        - KafkaConsumer__ConsumerConfig__AutoOffsetReset=Earliest
+        - KafkaConsumer__ConsumerConfig__BootstrapServers=localhost:9092
+        - KafkaConsumer__ConsumerConfig__EnableAutoCommit=False
+        - KafkaConsumer__ConsumerConfig__GroupId=Payments
+        - KafkaConsumer__Topics__0=Carts
+        - KafkaProducer__ProducerConfig__BootstrapServers=localhost:9092
+        - KafkaProducer__Topic=Payments
     ports:
       - "56080:80"

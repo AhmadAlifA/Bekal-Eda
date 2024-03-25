@@ -12,7 +12,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
 
-  store.garphql:
+  store.graphql:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
 
@@ -20,7 +20,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
 
-  order.garphql:
+  order.graphql:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
 
@@ -28,7 +28,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
 
-  payment.garphql:
+  payment.graphql:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
 

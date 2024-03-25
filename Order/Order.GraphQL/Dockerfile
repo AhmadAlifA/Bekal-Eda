@@ -6,20 +6,20 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["Payment/Payment.GarphQL/Payment.GarphQL.csproj", "Payment/Payment.GarphQL/"]
+COPY ["Order/Order.GraphQL/Order.GraphQL.csproj", "Order/Order.GraphQL/"]
 COPY ["Framework.Kafka/Framework.Kafka.csproj", "Framework.Kafka/"]
 COPY ["Framework.Core/Framework.Core.csproj", "Framework.Core/"]
-COPY ["Payment/Payment.Domain/Payment.Domain.csproj", "Payment/Payment.Domain/"]
+COPY ["Order/Order.Domain/Order.Domain.csproj", "Order/Order.Domain/"]
 COPY ["Framework.Auth/Framework.Auth.csproj", "Framework.Auth/"]
-RUN dotnet restore "Payment/Payment.GarphQL/Payment.GarphQL.csproj"
+RUN dotnet restore "Order/Order.GraphQL/Order.GraphQL.csproj"
 COPY . .
-WORKDIR "/src/Payment/Payment.GarphQL"
-RUN dotnet build "Payment.GarphQL.csproj" -c Release -o /app/build
+WORKDIR "/src/Order/Order.GraphQL"
+RUN dotnet build "Order.GraphQL.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Payment.GarphQL.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Order.GraphQL.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Payment.GarphQL.dll"]
+ENTRYPOINT ["dotnet", "Order.GraphQL.dll"]

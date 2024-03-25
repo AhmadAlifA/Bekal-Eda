@@ -82,7 +82,7 @@ builder.Services
     .AddScoped<Mutation>()
     .AddScoped<CartQuery>()
     .AddScoped<CartProductQuery>()
-    .AddScoped<ProductQuery>()
+    //.AddScoped<ProductQuery>()
     .AddScoped<CartMutation>()
     .AddScoped<CartProductMutation>()
     .AddScoped<ICartRepository, CartRepository>()

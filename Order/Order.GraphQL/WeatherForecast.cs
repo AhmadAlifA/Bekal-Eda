@@ -1,4 +1,4 @@
-namespace Payment.GarphQL
+namespace Order.GraphQL
 {
     public class WeatherForecast
     {

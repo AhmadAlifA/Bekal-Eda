@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Framework.Auth;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Order.Domain.Dtos;
 using Order.Domain.Entities;
 
@@ -17,10 +19,12 @@ namespace Order.Domain.Repositories
     }
     public class CartProductRepository : ICartProductRepository
     {
+        private ContextAccessor _contextAccessor;
         private readonly OrderDbContext _context;
-        public CartProductRepository(OrderDbContext context)
+        public CartProductRepository(OrderDbContext context, IHttpContextAccessor contextAccessor)
         {
             _context = context;
+            _contextAccessor = new ContextAccessor(contextAccessor);
             _context.Database.EnsureCreated();
         }
         public async Task<CartProductEntity> Add(CartProductEntity entity)

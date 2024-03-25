@@ -19,14 +19,17 @@ namespace Order.Domain.Services
     {
         private ICartProductRepository _repository;
         private readonly IProductRepository _productRepository;
+        private readonly ICartRepository _cartRepository;
         private readonly IMapper _mapper;
         private readonly IExternalEventProducer _externalEventProducer;
-        public CartProductService(ICartProductRepository repository, IMapper mapper, IExternalEventProducer externalEventProducer, IProductRepository productRepository)
+        public CartProductService(ICartProductRepository repository, IMapper mapper, IExternalEventProducer externalEventProducer,
+            IProductRepository productRepository, ICartRepository cartRepository)
         {
             _repository = repository;
             _mapper = mapper;
             _externalEventProducer = externalEventProducer;
             _productRepository = productRepository;
+            _cartRepository = cartRepository;
         }
 
         public async Task<IEnumerable<CartProductDto>> GetAllCartProduct()
@@ -99,23 +102,27 @@ namespace Order.Domain.Services
                 {
                     var existEntity = await _repository.GetById(dto.Id);
                     var product = await _repository.GetProductById(existEntity.ProductId);
+                    var cartEntity = await _cartRepository.GetById(existEntity.CartId);
 
                     if (existEntity != null)
                     {
-                        if (product.Stock < dto.Quantity)
-                            return null;
-                        else
+                        if (cartEntity.Status == Framework.Core.Enums.CartStatusEnum.Pending)
                         {
-                            product.Stock = product.Stock - dto.Quantity;
+                            if (product.Stock < dto.Quantity)
+                                return null;
+                            else
+                            {
+                                product.Stock = product.Stock - dto.Quantity;
 
-                            await _productRepository.Update(product);
+                                await _productRepository.Update(product);
+                            }
+
+                            var entity = _mapper.Map<CartProductUpdateDto, CartProductEntity>(dto, existEntity);
+                            await _repository.Update(entity);
+                            var result = await _repository.SaveChangesAsync();
+
+                            return _mapper.Map<CartProductDto>(entity);
                         }
-
-                        var entity = _mapper.Map<CartProductUpdateDto, CartProductEntity>(dto, existEntity);
-                        await _repository.Update(entity);
-                        var result = await _repository.SaveChangesAsync();
-    
-                        return _mapper.Map<CartProductDto>(entity);
                     }
                 }
             }

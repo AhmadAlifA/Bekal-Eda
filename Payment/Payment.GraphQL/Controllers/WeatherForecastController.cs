@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Store.GarphQL.Controllers
+namespace Payment.GraphQL.Controllers
 {
     [ApiController]
     [Route("[controller]")]

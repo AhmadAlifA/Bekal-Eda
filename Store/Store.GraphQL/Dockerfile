@@ -6,20 +6,20 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["Store/Store.GarphQL/Store.GarphQL.csproj", "Store/Store.GarphQL/"]
+COPY ["Store/Store.GraphQL/Store.GraphQL.csproj", "Store/Store.GraphQL/"]
 COPY ["Framework.Kafka/Framework.Kafka.csproj", "Framework.Kafka/"]
 COPY ["Framework.Core/Framework.Core.csproj", "Framework.Core/"]
 COPY ["Store/Store.Domain/Store.Domain.csproj", "Store/Store.Domain/"]
 COPY ["Framework.Auth/Framework.Auth.csproj", "Framework.Auth/"]
-RUN dotnet restore "Store/Store.GarphQL/Store.GarphQL.csproj"
+RUN dotnet restore "Store/Store.GraphQL/Store.GraphQL.csproj"
 COPY . .
-WORKDIR "/src/Store/Store.GarphQL"
-RUN dotnet build "Store.GarphQL.csproj" -c Release -o /app/build
+WORKDIR "/src/Store/Store.GraphQL"
+RUN dotnet build "Store.GraphQL.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Store.GarphQL.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Store.GraphQL.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Store.GarphQL.dll"]
+ENTRYPOINT ["dotnet", "Store.GraphQL.dll"]
